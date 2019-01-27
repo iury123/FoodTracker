@@ -20,8 +20,12 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         // Handle the text field’s user input through delegate callbacks.
         nameTextField.delegate = self
+        
+        // Enable the Save button only if the text field has a valid Meal name.
+        updateSaveButtonState()
     }
     
     //MARK: Navigation
@@ -44,15 +48,12 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     }
     
     
-    
+    @IBAction func cancel(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
     
 
-//    //MARK: Actions
-    
-//    @IBAction func setDefaultLabelText(_ sender: UIButton) {
-//        mealNameLabel.text = "Default Text"
-//    }
-    
+    //MARK: Actions
     @IBAction func selectImageFromPhotoLibrary(_ sender: UITapGestureRecognizer) {
         nameTextField.resignFirstResponder()
         // UIImagePickerController is a view controller that lets a user pick media from their photo library.
@@ -70,9 +71,15 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate{
         return true
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        // Disable the Save button while editing.
+        saveButton.isEnabled = false
+    }
+    
     //Called after textField.resignFirstResponder()
     func textFieldDidEndEditing(_ textField: UITextField) {
-       
+        updateSaveButtonState()
+        navigationItem.title = textField.text
     }
     
     //MARK: UIImagePickerControllerDelegate
@@ -90,6 +97,13 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate{
         photoImageView.image = selectedImage
         // Dismiss the picker.
         dismiss(animated: true, completion: nil)
+    }
+    
+    //MARK: Private Methods
+    private func updateSaveButtonState() {
+        // Disable the Save button if the text field is empty.
+        let text = nameTextField.text ?? ""
+        saveButton.isEnabled = !text.isEmpty
     }
     
 }
